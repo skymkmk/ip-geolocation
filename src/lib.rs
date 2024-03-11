@@ -55,8 +55,8 @@ impl CIDRMap {
                     let mut range = 0;
                     let mut mutted = false;
                     let mut delete_flag = false;
-                    if let Some((&queryed_ipv4, queryed_detail)) = data.range(..ipv4).next_back() {
-                        if queryed_detail.label == *label && queryed_ipv4 + queryed_detail.range - 1 >= ipv4 && queryed_ipv4 + queryed_detail.range - 1 < ipv4 + mask - 1 {
+                    if let Some((&queryed_ipv4, queryed_detail)) = data.range(..ipv4 + 1).next_back() {
+                        if queryed_detail.label == *label && queryed_ipv4 + queryed_detail.range >= ipv4 && queryed_ipv4 + queryed_detail.range < ipv4 + mask {
                             start_ip = queryed_ipv4;
                             range = ipv4 + mask - queryed_ipv4;
                         }
@@ -69,8 +69,8 @@ impl CIDRMap {
                         start_ip = ipv4;
                         range = mask;
                     }
-                    if let Some((&queryed_ipv4, queryed_detail)) = data.range(start_ip..).next() {
-                        if queryed_detail.label == *label && start_ip + mask - 1 >= queryed_ipv4 {
+                    if let Some((&queryed_ipv4, queryed_detail)) = data.range(start_ip + 1..).next() {
+                        if queryed_detail.label == *label && start_ip + mask >= queryed_ipv4 {
                             delete_flag = true;
                             if start_ip + mask < queryed_ipv4 + queryed_detail.range {
                                 range = queryed_ipv4 + queryed_detail.range - start_ip;
@@ -79,8 +79,8 @@ impl CIDRMap {
                     }
                     if delete_flag {
                         data.get_mut(&start_ip).unwrap().range = range;
-                        let next_key = *data.range(ipv4 + 1..).next().unwrap().0;
-                        data.remove_entry(&next_key);
+                        let next_key = *data.range(start_ip + 1..).next().unwrap().0;
+                        data.remove(&next_key);
                         mutted = true;
                     }
                     if !mutted {
