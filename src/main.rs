@@ -1,4 +1,4 @@
-use ip_geolocation::{generate_csv, CIDRMap, ReposDir};
+use ip_geolocation::{generate_csv, ReposDir};
 
 
 fn main() {
@@ -6,7 +6,6 @@ fn main() {
     let dirs = ReposDir::fetch_data();
     println!("-----Data fatched!----");
     println!("-----Compiling CSV----"); 
-    let isp_database = CIDRMap::read_operator_ip_repo(&dirs);
-    generate_csv(&dirs, &isp_database);
+    generate_csv(&dirs);
     println!("-----CSV compiled!----"); 
 }
